@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContaApp</title>
+<link rel="manifest" href="manifest.json">
+<style>
+body{margin:0;font-family:-apple-system;background:#f2f2f7}
+.header{padding:20px;text-align:center;font-size:22px;font-weight:bold}
+.card{background:#fff;margin:10px;border-radius:15px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+button{border:none;background:#007aff;color:#fff;padding:8px 12px;border-radius:10px}
+input,select{padding:8px;border-radius:10px;border:1px solid #ccc;margin:5px;width:90%}
+.bottom-nav{position:fixed;bottom:0;width:100%;display:flex;background:#fff;border-top:1px solid #ccc}
+.bottom-nav button{flex:1;background:none;color:#007aff;padding:15px}
+.hidden{display:none}
+.big{font-size:26px;font-weight:bold}
+</style>
+</head>
+<body>
+
+<div class="header">💰 ContaApp</div>
+
+<div id="home">
+<div class="card">
+<div class="big">Total: $<span id="total">0</span></div>
+</div>
+</div>
+
+<div id="cats" class="hidden">
+<div class="card">
+<input id="catName" placeholder="Nueva categoría">
+<button onclick="addCategory()">Agregar</button>
+</div>
+<div id="categories"></div>
+</div>
+
+<div id="gastos" class="hidden">
+<div class="card">
+<input id="gNombre" placeholder="Gasto">
+<input id="gValor" type="number" placeholder="Valor">
+<button onclick="addGasto()">Agregar</button>
+</div>
+<ul id="gList"></ul>
+</div>
+
+<div class="bottom-nav">
+<button onclick="nav('home')">🏠</button>
+<button onclick="nav('cats')">📂</button>
+<button onclick="nav('gastos')">💸</button>
+</div>
+
+<script>
+let db=JSON.parse(localStorage.getItem('db2'))||{cats:[],gastos:[]};
+
+function save(){localStorage.setItem('db2',JSON.stringify(db));}
+
+function nav(x){
+ document.getElementById('home').classList.add('hidden');
+ document.getElementById('cats').classList.add('hidden');
+ document.getElementById('gastos').classList.add('hidden');
+ document.getElementById(x).classList.remove('hidden');
+}
+
+function addCategory(){
+ let n=document.getElementById('catName').value;
+ if(!n)return;
+ db.cats.push({name:n,subs:[],open:false});
+ document.getElementById('catName').value='';
+ save();render();
+}
+
+function addSub(i){
+ let n=prompt('Nombre');
+ let v=parseFloat(prompt('Valor'));
+ if(!n||isNaN(v))return;
+ db.cats[i].subs.push({name:n,value:v});
+ save();render();
+}
+
+function toggle(i){db.cats[i].open=!db.cats[i].open;render();}
+
+function delCat(i){db.cats.splice(i,1);save();render();}
+
+function delSub(i,j){db.cats[i].subs.splice(j,1);save();render();}
+
+function addGasto(){
+ let n=document.getElementById('gNombre').value;
+ let v=parseFloat(document.getElementById('gValor').value);
+ if(!n||isNaN(v))return;
+ db.gastos.push({n,v});
+ document.getElementById('gNombre').value='';
+ document.getElementById('gValor').value='';
+ save();render();
+}
+
+function delGasto(i){db.gastos.splice(i,1);save();render();}
+
+function render(){
+ let total=0;
+ let cont=document.getElementById('categories');
+ cont.innerHTML='';
+
+ db.cats.forEach((c,i)=>{
+  let sum=0;
+  c.subs.forEach(s=>sum+=s.value);
+  total+=sum;
+
+  let div=document.createElement('div');div.className='card';
+  let h=document.createElement('h3');h.textContent=`${c.name} ($${sum})`;
+  h.onclick=()=>toggle(i);
+
+  let b1=document.createElement('button');b1.textContent='+';b1.onclick=()=>addSub(i);
+  let b2=document.createElement('button');b2.textContent='🗑';b2.onclick=()=>delCat(i);
+
+  let ul=document.createElement('ul');ul.className=c.open?'':'hidden';
+
+  c.subs.forEach((s,j)=>{
+    let li=document.createElement('li');li.textContent=`${s.name}: $${s.value}`;
+    let d=document.createElement('button');d.textContent='❌';d.onclick=()=>delSub(i,j);
+    li.appendChild(d);
+    ul.appendChild(li);
+  });
+
+  div.appendChild(h);div.appendChild(b1);div.appendChild(b2);div.appendChild(ul);
+  cont.appendChild(div);
+ });
+
+ let gList=document.getElementById('gList');gList.innerHTML='';
+ let tg=0;
+ db.gastos.forEach((g,i)=>{
+  tg+=g.v;
+  let li=document.createElement('li');li.textContent=`${g.n}: $${g.v}`;
+  let d=document.createElement('button');d.textContent='❌';d.onclick=()=>delGasto(i);
+  li.appendChild(d);
+  gList.appendChild(li);
+ });
+
+ document.getElementById('total').textContent=total-tg;
+}
+
+render();
+</script>
+
+</body>
+</html>
+
+<!-- manifest.json -->
+{
+  "name": "ContaApp",
+  "short_name": "ContaApp",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007aff",
+  "icons": []
+}
