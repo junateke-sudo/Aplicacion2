@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FinanzasPro Cloud Premium v5.7</title>
-    <!-- Iconos de Google -->
+    <title>Contarapp v1.0</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root {
@@ -52,6 +51,26 @@
             pointer-events: none;
         }
 
+        /* ================= ESTILOS DEL LOGO DEL CANICHE ================= */
+        .contenedor-logo-app {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icono-caniche {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .icono-caniche-grande {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
         /* ================= VISTA DE AUTENTICACIÓN ================= */
         .contenedor-auth {
             display: none;
@@ -81,15 +100,18 @@
         .auth-header {
             text-align: center;
             margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .auth-header h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #ffffff, #9ca3af);
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #ffffff, #a5b4fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         .auth-header p {
@@ -135,9 +157,9 @@
         }
 
         header h1 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #fff, #9ca3af);
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #c7d2fe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -415,12 +437,11 @@
 
     <canvas id="canvas-particulas"></canvas>
 
-    <!-- ================= CONTENEDOR DE AUTENTICACIÓN ================= -->
     <div id="seccionAuth" class="contenedor-auth activa">
         <div class="tarjeta-auth">
             <div class="auth-header">
-                <span class="material-icons" style="font-size: 48px; color: var(--primario)">shield</span>
-                <h2 id="authTitulo">Iniciar Sesión</h2>
+                <img src="https://cdn-icons-png.flaticon.com/512/3307/3307643.png" alt="Caniche Logo" class="icono-caniche-grande">
+                <h2 id="authTitulo">Contarapp</h2>
                 <p id="authSubtitulo">Ingresa tus credenciales para acceder a la nube</p>
             </div>
 
@@ -450,10 +471,12 @@
         </div>
     </div>
 
-    <!-- ================= INTERFAZ COMPLETA DE LA APP ================= -->
     <div id="interfazApp" class="interfaz-app">
         <header>
-            <h1>FinanzasPro Premium</h1>
+            <div class="contenedor-logo-app">
+                <img src="https://cdn-icons-png.flaticon.com/512/3307/3307643.png" alt="Caniche" class="icono-caniche">
+                <h1>Contarapp</h1>
+            </div>
             <div id="statusNube" style="font-size: 0.75rem; color: var(--texto-mutado); font-weight: bold; display:flex; align-items:center; gap:4px;">
                 <span class="material-icons" style="font-size:14px">cloud_queue</span> Conectando...
             </div>
@@ -470,7 +493,6 @@
         </div>
 
         <div class="contenedor">
-            <!-- VISTA 1: INICIO -->
             <div id="vistaInicio" class="vista activa">
                 <div class="tarjeta-balance-total">
                     <p style="font-size: 0.8rem; text-transform: uppercase; opacity: 0.8;">Disponible Neto</p>
@@ -485,7 +507,6 @@
                 <div class="seccion-dashboard"><h2><span class="material-icons" style="font-size:18px;">savings</span> Distribuciones Clave</h2><div class="lista-items" id="dashAhorros"></div></div>
             </div>
 
-            <!-- VISTA 2: RESUMEN EXCLUSIVO -->
             <div id="vistaResumen" class="vista">
                 <div class="bloque-resumen-exclusivo">
                     <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:var(--primario)">analytics</span> Reporte Quincenal Listo</h2>
@@ -494,7 +515,6 @@
                 </div>
             </div>
 
-            <!-- VISTA 3: HISTORIAL -->
             <div id="vistaHistorial" class="vista">
                 <div class="filtros-historial">
                     <button class="btn-filtro activo" data-filtro="todos">Todos</button>
@@ -505,7 +525,6 @@
                 <div class="lista-items" id="listaHistorial"></div>
             </div>
 
-            <!-- VISTA 4: AJUSTES -->
             <div id="vistaAjustes" class="vista">
                 <div class="tarjeta-ajustes">
                     <h2 style="font-size: 1.1rem; font-weight: 700; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:var(--primario)">analytics</span> Historial de Rendimiento (VS)</h2>
@@ -539,7 +558,6 @@
         </nav>
     </div>
 
-    <!-- MODAL REGISTROS -->
     <div class="capa-oscura" id="capaOscura"></div>
     <div class="panel-registro" id="panelRegistro">
         <div class="linea-cierre" id="btnCerrarModal"></div>
@@ -548,21 +566,18 @@
             <button class="tab-form-btn" id="tabAhorro" data-tab="ahorro"><span class="material-icons" style="font-size:18px">savings</span>Ahorro</button>
             <button class="tab-form-btn" id="tabCuenta" data-tab="cuenta"><span class="material-icons" style="font-size:18px">account_balance</span>Cuenta</button>
         </div>
-        <!-- FORM GASTO -->
         <div id="formGasto" class="sub-formulario activo">
             <div class="grupo-input"><label>¿En qué gastaste?</label><div class="wrapper-input-icono"><span class="material-icons">edit</span><input type="text" id="gastoNombre" placeholder="Ej. Arriendo..."></div>
             <div class="botones-rapidos"><button class="btn-rapido" type="button" onclick="document.getElementById('gastoNombre').value='🏠 Arriendo'">🏠 Arriendo</button><button class="btn-rapido" type="button" onclick="document.getElementById('gastoNombre').value='🍔 Comida'">🍔 Comida</button></div></div>
             <div class="grupo-input"><label>Valor</label><div class="wrapper-input-icono"><span class="material-icons">payments</span><input type="number" id="gastoMonto" placeholder="0"></div></div>
             <button class="btn-guardar" id="btnGuardarGasto">Confirmar Gasto</button>
         </div>
-        <!-- FORM AHORRO -->
         <div id="formAhorro" class="sub-formulario">
             <div class="grupo-input"><label>Nombre del Bolsillo</label><div class="wrapper-input-icono"><span class="material-icons">bookmark_border</span><input type="text" id="ahorroNombre" placeholder="Ej. Emergencias..."></div></div>
             <div class="grupo-input"><label>Clasificación</label><div class="wrapper-input-icono"><span class="material-icons">style</span><select id="ahorroTipo"><option value="ahorro">🐷 Ahorro Protegido</option><option value="deuda">🧾 Deuda</option></select></div></div>
             <div class="grupo-input"><label>Monto</label><div class="wrapper-input-icono"><span class="material-icons">paid</span><input type="number" id="ahorroMonto" placeholder="0"></div></div>
             <button class="btn-guardar" id="btnGuardarAhorro">Compartimentar Dinero</button>
         </div>
-        <!-- FORM CUENTA -->
         <div id="formCuenta" class="sub-formulario">
             <div class="grupo-input"><label>Tipo</label><div class="wrapper-input-icono"><span class="material-icons">account_balance_wallet</span><select id="cuentaTipo"><option value="🏦 Bancos">🏦 Banco / Virtual</option><option value="💵 Efectivo">💵 Efectivo</option></select></div></div>
             <div class="grupo-input"><label>Entidad</label><div class="wrapper-input-icono"><span class="material-icons">credit_card</span><input type="text" id="cuentaNombre" placeholder="Ej. Nequi..."></div></div>
@@ -571,7 +586,6 @@
         </div>
     </div>
 
-    <!-- ================= CONEXIÓN DE INFRAESTRUCTURA FIREBASE SDK ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
@@ -607,7 +621,6 @@
             actualizarTodo();
         });
 
-        // ESCUCHA ACTIVA DE SESIONES - AISLAMIENTO ANTICRUCES
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 usuarioActual = user;
@@ -796,7 +809,7 @@
                 else { elBadge.style.background = "rgba(245, 158, 11, 0.15)"; elBadge.style.color = "var(--amarillo-alerta)"; elIcono.innerText = "trending_flat"; elTextoEstado.innerText = "SIN CAMBIOS"; elDetalleTexto.innerText = "Mismo nivel."; }
             }
 
-            textoResumenGlobal = `*📊 INFORME FINANZAS PRO*\n📅 Periodo: ${periodoActual}\n----------------------------\n*🏦 TOTAL CUENTAS:* ${formatearMoneda(totalCuentas)}\n*🔴 GASTOS:* ${formatearMoneda(totalGastos)}\n*🟢 AHORROS:* ${formatearMoneda(totalAhorros)}\n----------------------------\n*💵 NETO DISPONIBLE:* ${formatearMoneda(netoDisponible)}`;
+            textoResumenGlobal = `*📊 INFORME CONTARAPP*\n📅 Periodo: ${periodoActual}\n----------------------------\n*🏦 TOTAL CUENTAS:* ${formatearMoneda(totalCuentas)}\n*🔴 GASTOS:* ${formatearMoneda(totalGastos)}\n*🟢 AHORROS:* ${formatearMoneda(totalAhorros)}\n----------------------------\n*💵 NETO DISPONIBLE:* ${formatearMoneda(netoDisponible)}`;
             document.getElementById('previewResumenTexto').innerText = textoResumenGlobal;
 
             const dashCuentas = document.getElementById('dashCuentas'); dashCuentas.innerHTML = cFiltradas.length === 0 ? '<div class="sin-datos">No hay cuentas activas</div>' : '';
@@ -817,7 +830,6 @@
             todosLosItems.sort((a, b) => b.id - a.id).forEach(item => { contenedor.innerHTML += `<div class="item-financiero ${item.xClase}"><div class="item-info-wrapper"><div class="icono-categoria"><span class="material-icons">${item.xIcono}</span></div><div class="item-info"><div class="nombre">${item.nombre || item.detalle}</div><div class="detalle">${item.xDetalle}</div></div></div><div style="display:flex; align-items:center; gap:12px;"><span class="item-monto">${formatearMoneda(item.monto)}</span><span class="material-icons" style="color:var(--rojo-peligro); cursor:pointer; font-size:18px;" onclick="window.eliminarItem('${item.xTipo}', ${item.id})">delete</span></div></div>`; });
         }
 
-        // CONTROL DE NAVEGACIÓN CORREGIDO (LÍNEA classList)
         window.cambiarVista = function(vista) {
             document.getElementById('vistaInicio').classList.remove('activa'); document.getElementById('vistaHistorial').classList.remove('activa'); document.getElementById('vistaResumen').classList.remove('activa'); document.getElementById('vistaAjustes').classList.remove('activa');
             document.getElementById('navInicio').classList.remove('activo'); document.getElementById('navHistorial').classList.remove('activo'); document.getElementById('navResumen').classList.remove('activo'); document.getElementById('navAjustes').classList.remove('activo');
@@ -865,7 +877,6 @@
             window.open(`https://api.whatsapp.com/send?phone=573028571963&text=${encodeURIComponent(textoResumenGlobal)}`, '_blank');
         });
 
-        // MOTOR DE PARTÍCULAS INTERACTIVAS
         const canvas = document.getElementById('canvas-particulas'); const ctx = canvas.getContext('2d'); let particulas = [];
         function ajustarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', ajustarCanvas); ajustarCanvas();
