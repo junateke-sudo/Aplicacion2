@@ -51,24 +51,26 @@
             pointer-events: none;
         }
 
-        /* ================= ESTILOS DEL LOGO DEL CANICHE ================= */
+        /* ================= ESTILOS DEL LOGO DEL CANICHE (BLANCO Y GRANDE) ================= */
         .contenedor-logo-app {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 14px;
         }
 
         .icono-caniche {
-            width: 28px;
-            height: 28px;
+            width: 42px; /* Más grande en el Header (Antes 28px) */
+            height: 42px;
             object-fit: contain;
+            filter: brightness(0) invert(1); /* Hack CSS para volver el icono 100% blanco */
         }
 
         .icono-caniche-grande {
-            width: 64px;
-            height: 64px;
+            width: 96px; /* Más grande en el Login (Antes 64px) */
+            height: 96px;
             object-fit: contain;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            filter: brightness(0) invert(1); /* Hack CSS para volver el icono 100% blanco */
         }
 
         /* ================= VISTA DE AUTENTICACIÓN ================= */
@@ -106,7 +108,7 @@
         }
 
         .auth-header h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
             background: linear-gradient(to right, #ffffff, #a5b4fc);
             -webkit-background-clip: text;
@@ -146,7 +148,7 @@
         header {
             background: rgba(18, 24, 36, 0.85);
             backdrop-filter: blur(12px);
-            padding: 15px 20px;
+            padding: 18px 20px;
             border-bottom: 1px solid var(--borde);
             display: flex;
             justify-content: space-between;
@@ -157,7 +159,7 @@
         }
 
         header h1 {
-            font-size: 1.3rem;
+            font-size: 1.5rem; /* Un poco más grande para combinar con el icono */
             font-weight: 800;
             background: linear-gradient(to right, #fff, #c7d2fe);
             -webkit-background-clip: text;
