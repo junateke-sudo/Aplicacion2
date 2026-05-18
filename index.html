@@ -1,157 +1,882 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ContaApp</title>
-<link rel="manifest" href="manifest.json">
-<style>
-body{margin:0;font-family:-apple-system;background:#f2f2f7}
-.header{padding:20px;text-align:center;font-size:22px;font-weight:bold}
-.card{background:#fff;margin:10px;border-radius:15px;padding:15px;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
-button{border:none;background:#007aff;color:#fff;padding:8px 12px;border-radius:10px}
-input,select{padding:8px;border-radius:10px;border:1px solid #ccc;margin:5px;width:90%}
-.bottom-nav{position:fixed;bottom:0;width:100%;display:flex;background:#fff;border-top:1px solid #ccc}
-.bottom-nav button{flex:1;background:none;color:#007aff;padding:15px}
-.hidden{display:none}
-.big{font-size:26px;font-weight:bold}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanzasPro Cloud Premium v5.7</title>
+    <!-- Iconos de Google -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --bg-principal: #080b10;
+            --bg-tarjeta: #121824;
+            --bg-tarjeta-hover: #1c2436;
+            --primario: #6366f1;
+            --primario-gradiente: linear-gradient(135deg, #818cf8, #4f46e5);
+            --verde-exito: #10b981;
+            --verde-gradiente: linear-gradient(135deg, #34d399, #059669);
+            --rojo-peligro: #ef4444;
+            --rojo-gradiente: linear-gradient(135deg, #f87171, #dc2626);
+            --amarillo-alerta: #f59e0b;
+            --texto-blanco: #ffffff;
+            --texto-mutado: #9ca3af;
+            --borde: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-blanco);
+            padding-bottom: 110px;
+            overflow-x: hidden;
+        }
+
+        body.auth-activa {
+            padding-bottom: 0;
+        }
+
+        #canvas-particulas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* ================= VISTA DE AUTENTICACIÓN ================= */
+        .contenedor-auth {
+            display: none;
+            min-height: 100vh;
+            padding: 30px 24px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .contenedor-auth.activa {
+            display: flex;
+        }
+
+        .tarjeta-auth {
+            background: rgba(18, 24, 36, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--borde);
+            border-radius: 28px;
+            padding: 35px 24px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 10px;
+        }
+
+        .auth-header p {
+            font-size: 0.85rem;
+            color: var(--texto-mutado);
+            margin-top: 5px;
+        }
+
+        .bloque-toggle-auth {
+            font-size: 0.85rem;
+            color: var(--texto-mutado);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .bloque-toggle-auth span {
+            color: var(--primario);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* ================= INTERFAZ PRINCIPAL (APP) ================= */
+        .interfaz-app {
+            display: none;
+        }
+
+        .interfaz-app.activa {
+            display: block;
+        }
+
+        header {
+            background: rgba(18, 24, 36, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--borde);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .selector-quincena-global {
+            background: rgba(18, 24, 36, 0.75);
+            backdrop-filter: blur(8px);
+            margin: 15px;
+            padding: 12px 15px;
+            border-radius: 16px;
+            border: 1px solid var(--borde);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .selector-quincena-global select {
+            background: rgba(8, 11, 16, 0.7);
+            color: var(--texto-blanco);
+            border: 1px solid var(--borde);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            width: auto;
+            outline: none;
+        }
+
+        .contenedor {
+            padding: 0 15px;
+        }
+
+        .vista {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .vista.activa {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grupo-input { margin-bottom: 20px; }
+        
+        .grupo-input label { 
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.8rem; font-weight: 600; color: #64748b;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; 
+        }
+        
+        .wrapper-input-icono {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .wrapper-input-icono .material-icons {
+            position: absolute; left: 14px; color: #475569; font-size: 20px;
+        }
+
+        input, select {
+            background: #161f2c; color: var(--texto-blanco);
+            border: 1px solid #222e40; padding: 14px 14px 14px 44px;
+            border-radius: 14px; outline: none; font-size: 1rem; width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primario);
+        }
+
+        .btn-primario-pro {
+            background: var(--primario-gradiente);
+            color: white; border: none; padding: 15px; width: 100%; 
+            border-radius: 14px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
+        }
+
+        /* METRICAS Y KPI */
+        .grid-kpi {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .tarjeta-kpi {
+            background: var(--bg-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: 18px;
+            padding: 15px;
+        }
+
+        .tarjeta-kpi p {
+            font-size: 0.75rem;
+            color: var(--texto-mutado);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .tarjeta-kpi .monto-kpi {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .tarjeta-balance-total {
+            background: var(--primario-gradiente);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+        }
+
+        /* PESTAÑA AJUSTES */
+        .tarjeta-ajustes {
+            background: var(--bg-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .tarjeta-comparativa-vs {
+            background: rgba(8, 11, 16, 0.5);
+            border: 1px solid var(--borde);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .vs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--texto-mutado);
+            font-weight: 600;
+        }
+
+        .vs-body {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 2px;
+        }
+
+        .vs-badge-estado {
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .select-ajuste { padding-left: 14px; }
+
+        /* PESTAÑA RESUMEN */
+        .bloque-resumen-exclusivo {
+            background: var(--bg-tarjeta);
+            border: 1px solid var(--borde);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 5px;
+        }
+
+        .cuadro-preview-texto {
+            background: rgba(8, 11, 16, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.5;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .btn-enviar-wa {
+            background: #25d366; color: white; border: none; padding: 14px 18px;
+            border-radius: 12px; font-size: 0.95rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; margin-top: 15px; cursor: pointer;
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.25);
+        }
+
+        .seccion-dashboard { margin-bottom: 22px; }
+        .seccion-dashboard h2 {
+            font-size: 1rem; color: var(--texto-mutado); margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .filtros-historial { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .btn-filtro {
+            background: var(--bg-tarjeta); border: 1px solid var(--borde); color: var(--texto-mutado);
+            padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+        }
+        .btn-filtro.activo { background: var(--primario); color: white; border-color: var(--primario); }
+
+        .lista-items { display: grid; gap: 10px; }
+        .item-financiero {
+            background: rgba(18, 24, 36, 0.8); padding: 14px; border-radius: 14px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--borde);
+        }
+
+        .item-info-wrapper { display: flex; align-items: center; gap: 12px; }
+        .icono-categoria { background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 10px; display: flex; align-items: center; }
+        .item-financiero.gasto .icono-categoria { color: var(--rojo-peligro); background: rgba(239, 68, 68, 0.1); }
+        .item-financiero.ahorro .icono-categoria { color: var(--verde-exito); background: rgba(16, 185, 129, 0.1); }
+        .item-financiero.cuenta .icono-categoria { color: var(--primario); background: rgba(99, 102, 241, 0.1); }
+
+        .item-info .nombre { font-weight: 600; font-size: 0.95rem; }
+        .item-info .detalle { font-size: 0.75rem; color: var(--texto-mutado); margin-top: 2px;}
+        .item-monto { font-weight: 700; font-size: 0.95rem;}
+
+        /* NAVEGACIÓN INFERIOR */
+        .nav-inferior {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(18, 24, 36, 0.95); backdrop-filter: blur(16px);
+            height: 75px; display: grid; grid-template-columns: 1fr 1fr 65px 1fr 1fr;
+            align-items: center; border-top: 1px solid var(--borde); z-index: 100; padding: 0 5px;
+        }
+
+        .btn-nav { background: none; border: none; color: var(--texto-mutado); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; cursor: pointer; gap: 3px; }
+        .btn-nav.activo { color: var(--primario); }
+        .contenedor-btn-flotante { display: flex; justify-content: center; position: relative; }
+        
+        .btn-flotante {
+            background: var(--primario-gradiente); color: white; width: 50px; height: 50px;
+            border-radius: 50%; border: none; position: absolute; top: -30px;
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); display: flex; justify-content: center; align-items: center; cursor: pointer;
+        }
+
+        /* MODALES */
+        .capa-oscura { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(4, 6, 10, 0.7); backdrop-filter: blur(6px); z-index: 200; display: none; }
+        .panel-registro {
+            position: fixed; bottom: -100%; left: 0; right: 0; background: #0f141c; border-radius: 30px 30px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 25px 20px 35px 20px; z-index: 201; transition: bottom 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.12); max-height: 85vh; overflow-y: auto;
+        }
+        .panel-registro.abierto { bottom: 0; }
+        .linea-cierre { width: 45px; height: 5px; background: #222b3d; border-radius: 10px; margin: 0 auto 22px auto; }
+
+        .tabs-formulario { display: flex; background: #07090e; padding: 5px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.03); }
+        .tab-form-btn { flex: 1; padding: 12px; border: none; background: none; color: var(--texto-mutado); font-size: 0.9rem; font-weight: 600; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .tab-form-btn.activo { background: var(--bg-tarjeta); color: var(--texto-blanco); }
+        .sub-formulario { display: none; }
+        .sub-formulario.activo { display: block; }
+        .botones-rapidos { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .btn-rapido { background: #161f2c; border: 1px solid #222e40; color: #94a3b8; padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+
+        .btn-guardar { color: white; border: none; padding: 15px; width: 100%; border-radius: 14px; font-size: 1rem; font-weight: 700; margin-top: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        #formGasto .btn-guardar { background: var(--rojo-gradiente); }
+        #formAhorro .btn-guardar { background: var(--verde-gradiente); }
+        #formCuenta .btn-guardar { background: var(--primario-gradiente); }
+        .sin-datos { text-align: center; color: var(--texto-mutado); font-size: 0.9rem; padding: 30px 0; }
+
+        .btn-cerrar-sesion { background: rgba(239, 68, 68, 0.1); color: var(--rojo-peligro); border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px; border-radius: 12px; font-weight: 600; width: 100%; margin-top: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    </style>
 </head>
-<body>
+<body class="auth-activa">
 
-<div class="header">💰 ContaApp</div>
+    <canvas id="canvas-particulas"></canvas>
 
-<div id="home">
-<div class="card">
-<div class="big">Total: $<span id="total">0</span></div>
-</div>
-</div>
+    <!-- ================= CONTENEDOR DE AUTENTICACIÓN ================= -->
+    <div id="seccionAuth" class="contenedor-auth activa">
+        <div class="tarjeta-auth">
+            <div class="auth-header">
+                <span class="material-icons" style="font-size: 48px; color: var(--primario)">shield</span>
+                <h2 id="authTitulo">Iniciar Sesión</h2>
+                <p id="authSubtitulo">Ingresa tus credenciales para acceder a la nube</p>
+            </div>
 
-<div id="cats" class="hidden">
-<div class="card">
-<input id="catName" placeholder="Nueva categoría">
-<button onclick="addCategory()">Agregar</button>
-</div>
-<div id="categories"></div>
-</div>
+            <div class="grupo-input">
+                <label><span class="material-icons" style="font-size:14px">email</span>Correo Electrónico</label>
+                <div class="wrapper-input-icono">
+                    <span class="material-icons">alternate_email</span>
+                    <input type="email" id="authEmail" placeholder="tu@correo.com">
+                </div>
+            </div>
 
-<div id="gastos" class="hidden">
-<div class="card">
-<input id="gNombre" placeholder="Gasto">
-<input id="gValor" type="number" placeholder="Valor">
-<button onclick="addGasto()">Agregar</button>
-</div>
-<ul id="gList"></ul>
-</div>
+            <div class="grupo-input">
+                <label><span class="material-icons" style="font-size:14px">lock</span>Contraseña</label>
+                <div class="wrapper-input-icono">
+                    <span class="material-icons">password</span>
+                    <input type="password" id="authPassword" placeholder="••••••••">
+                </div>
+            </div>
 
-<div class="bottom-nav">
-<button onclick="nav('home')">🏠</button>
-<button onclick="nav('cats')">📂</button>
-<button onclick="nav('gastos')">💸</button>
-</div>
+            <button class="btn-primario-pro" id="btnAccionAuth">
+                <span class="material-icons">login</span> <span id="txtBtnAuth">Entrar al Sistema</span>
+            </button>
 
-<script>
-let db=JSON.parse(localStorage.getItem('db2'))||{cats:[],gastos:[]};
+            <div class="bloque-toggle-auth" id="toggleAuthBloque">
+                ¿No tienes cuenta? <span id="btnToggleAuth">Regístrate aquí</span>
+            </div>
+        </div>
+    </div>
 
-function save(){localStorage.setItem('db2',JSON.stringify(db));}
+    <!-- ================= INTERFAZ COMPLETA DE LA APP ================= -->
+    <div id="interfazApp" class="interfaz-app">
+        <header>
+            <h1>FinanzasPro Premium</h1>
+            <div id="statusNube" style="font-size: 0.75rem; color: var(--texto-mutado); font-weight: bold; display:flex; align-items:center; gap:4px;">
+                <span class="material-icons" style="font-size:14px">cloud_queue</span> Conectando...
+            </div>
+        </header>
 
-function nav(x){
- document.getElementById('home').classList.add('hidden');
- document.getElementById('cats').classList.add('hidden');
- document.getElementById('gastos').classList.add('hidden');
- document.getElementById(x).classList.remove('hidden');
-}
+        <div class="selector-quincena-global">
+            <div><p style="font-size:0.75rem; color:var(--texto-mutado); font-weight:600;">Periodo Activo</p></div>
+            <select id="filtroPeriodo">
+                <option value="2026-05-Q1">Mayo 2026 - 1ª Quincena</option>
+                <option value="2026-05-Q2">Mayo 2026 - 2ª Quincena</option>
+                <option value="2026-06-Q1">Junio 2026 - 1ª Quincena</option>
+                <option value="2026-06-Q2">Junio 2026 - 2ª Quincena</option>
+            </select>
+        </div>
 
-function addCategory(){
- let n=document.getElementById('catName').value;
- if(!n)return;
- db.cats.push({name:n,subs:[],open:false});
- document.getElementById('catName').value='';
- save();render();
-}
+        <div class="contenedor">
+            <!-- VISTA 1: INICIO -->
+            <div id="vistaInicio" class="vista activa">
+                <div class="tarjeta-balance-total">
+                    <p style="font-size: 0.8rem; text-transform: uppercase; opacity: 0.8;">Disponible Neto</p>
+                    <div style="font-size: 2.2rem; font-weight: 700; margin-top: 2px;" id="valNeto">$0</div>
+                </div>
+                <div class="grid-kpi">
+                    <div class="tarjeta-kpi" style="border-left: 4px solid var(--primario);"><p>Total Cuentas</p><div class="monto-kpi" id="valCuentas" style="color: var(--primario);">$0</div></div>
+                    <div class="tarjeta-kpi" style="border-left: 4px solid var(--rojo-peligro);"><p>Gastos Fijos</p><div class="monto-kpi" id="valGastos" style="color: var(--rojo-peligro);">$0</div></div>
+                    <div class="tarjeta-kpi" style="border-left: 4px solid var(--verde-exito); grid-column: span 2;"><p>Asignado / Ahorros</p><div class="monto-kpi" id="valAhorros" style="color: var(--verde-exito);">$0</div></div>
+                </div>
+                <div class="seccion-dashboard"><h2><span class="material-icons" style="font-size:18px;">account_balance_wallet</span> Mis Fondos</h2><div class="lista-items" id="dashCuentas"></div></div>
+                <div class="seccion-dashboard"><h2><span class="material-icons" style="font-size:18px;">savings</span> Distribuciones Clave</h2><div class="lista-items" id="dashAhorros"></div></div>
+            </div>
 
-function addSub(i){
- let n=prompt('Nombre');
- let v=parseFloat(prompt('Valor'));
- if(!n||isNaN(v))return;
- db.cats[i].subs.push({name:n,value:v});
- save();render();
-}
+            <!-- VISTA 2: RESUMEN EXCLUSIVO -->
+            <div id="vistaResumen" class="vista">
+                <div class="bloque-resumen-exclusivo">
+                    <h2 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:var(--primario)">analytics</span> Reporte Quincenal Listo</h2>
+                    <div class="cuadro-preview-texto" id="previewResumenTexto">Generando reporte...</div>
+                    <button class="btn-enviar-wa" id="btnEnviarWA"><span class="material-icons">send</span> Enviar a WhatsApp</button>
+                </div>
+            </div>
 
-function toggle(i){db.cats[i].open=!db.cats[i].open;render();}
+            <!-- VISTA 3: HISTORIAL -->
+            <div id="vistaHistorial" class="vista">
+                <div class="filtros-historial">
+                    <button class="btn-filtro activo" data-filtro="todos">Todos</button>
+                    <button class="btn-filtro" data-filtro="gasto">Gastos 🔴</button>
+                    <button class="btn-filtro" data-filtro="ahorro">Ahorros 🟢</button>
+                    <button class="btn-filtro" data-filtro="cuenta">Cuentas 🔵</button>
+                </div>
+                <div class="lista-items" id="listaHistorial"></div>
+            </div>
 
-function delCat(i){db.cats.splice(i,1);save();render();}
+            <!-- VISTA 4: AJUSTES -->
+            <div id="vistaAjustes" class="vista">
+                <div class="tarjeta-ajustes">
+                    <h2 style="font-size: 1.1rem; font-weight: 700; display:flex; align-items:center; gap:8px;"><span class="material-icons" style="color:var(--primario)">analytics</span> Historial de Rendimiento (VS)</h2>
+                    <div class="tarjeta-comparativa-vs">
+                        <div class="vs-header"><span>Rentabilidad vs Quincena Pasada</span><span id="txtPeriodoPasado" style="font-weight: 700; color:#6366f1;">Q Anterior</span></div>
+                        <div class="vs-body">
+                            <div id="vsBadge" class="vs-badge-estado"><span class="material-icons" id="vsIcono">analytics</span><span id="vsTextoEstado">Analizando...</span></div>
+                            <div style="font-size: 0.8rem; color: var(--texto-mutado); line-height: 1.3;" id="vsDetalleTexto">Calculando...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tarjeta-ajustes">
+                    <h2><span class="material-icons" style="color:var(--amarillo-alerta)">settings</span> Ajustes</h2>
+                    <div class="grupo-ajuste" style="margin-top:15px;">
+                        <label>Divisa Base</label>
+                        <select id="selectMoneda" class="select-ajuste">
+                            <option value="COP">🇨🇴 COP ($)</option><option value="USD">🇺🇸 USD ($)</option><option value="EUR">🇪🇺 EUR (€)</option><option value="MXN">🇲🇽 MXN ($)</option>
+                        </select>
+                    </div>
+                    <button class="btn-cerrar-sesion" id="btnCerrarSesion"><span class="material-icons">logout</span> Cerrar Sesión en la Nube</button>
+                </div>
+            </div>
+        </div>
 
-function delSub(i,j){db.cats[i].subs.splice(j,1);save();render();}
+        <nav class="nav-inferior">
+            <button class="btn-nav activo" id="navInicio"><span class="material-icons">space_dashboard</span><span>Inicio</span></button>
+            <button class="btn-nav" id="navResumen"><span class="material-icons">analytics</span><span>Resumen</span></button>
+            <div class="contenedor-btn-flotante"><button class="btn-flotante" id="btnAbrirModal"><span class="material-icons" style="font-size:24px;">add</span></button></div>
+            <button class="btn-nav" id="navHistorial"><span class="material-icons">history</span><span>Historial</span></button>
+            <button class="btn-nav" id="navAjustes"><span class="material-icons">settings</span><span>Ajustes</span></button>
+        </nav>
+    </div>
 
-function addGasto(){
- let n=document.getElementById('gNombre').value;
- let v=parseFloat(document.getElementById('gValor').value);
- if(!n||isNaN(v))return;
- db.gastos.push({n,v});
- document.getElementById('gNombre').value='';
- document.getElementById('gValor').value='';
- save();render();
-}
+    <!-- MODAL REGISTROS -->
+    <div class="capa-oscura" id="capaOscura"></div>
+    <div class="panel-registro" id="panelRegistro">
+        <div class="linea-cierre" id="btnCerrarModal"></div>
+        <div class="tabs-formulario">
+            <button class="tab-form-btn activo" id="tabGasto" data-tab="gasto"><span class="material-icons" style="font-size:18px">trending_down</span>Gasto</button>
+            <button class="tab-form-btn" id="tabAhorro" data-tab="ahorro"><span class="material-icons" style="font-size:18px">savings</span>Ahorro</button>
+            <button class="tab-form-btn" id="tabCuenta" data-tab="cuenta"><span class="material-icons" style="font-size:18px">account_balance</span>Cuenta</button>
+        </div>
+        <!-- FORM GASTO -->
+        <div id="formGasto" class="sub-formulario activo">
+            <div class="grupo-input"><label>¿En qué gastaste?</label><div class="wrapper-input-icono"><span class="material-icons">edit</span><input type="text" id="gastoNombre" placeholder="Ej. Arriendo..."></div>
+            <div class="botones-rapidos"><button class="btn-rapido" type="button" onclick="document.getElementById('gastoNombre').value='🏠 Arriendo'">🏠 Arriendo</button><button class="btn-rapido" type="button" onclick="document.getElementById('gastoNombre').value='🍔 Comida'">🍔 Comida</button></div></div>
+            <div class="grupo-input"><label>Valor</label><div class="wrapper-input-icono"><span class="material-icons">payments</span><input type="number" id="gastoMonto" placeholder="0"></div></div>
+            <button class="btn-guardar" id="btnGuardarGasto">Confirmar Gasto</button>
+        </div>
+        <!-- FORM AHORRO -->
+        <div id="formAhorro" class="sub-formulario">
+            <div class="grupo-input"><label>Nombre del Bolsillo</label><div class="wrapper-input-icono"><span class="material-icons">bookmark_border</span><input type="text" id="ahorroNombre" placeholder="Ej. Emergencias..."></div></div>
+            <div class="grupo-input"><label>Clasificación</label><div class="wrapper-input-icono"><span class="material-icons">style</span><select id="ahorroTipo"><option value="ahorro">🐷 Ahorro Protegido</option><option value="deuda">🧾 Deuda</option></select></div></div>
+            <div class="grupo-input"><label>Monto</label><div class="wrapper-input-icono"><span class="material-icons">paid</span><input type="number" id="ahorroMonto" placeholder="0"></div></div>
+            <button class="btn-guardar" id="btnGuardarAhorro">Compartimentar Dinero</button>
+        </div>
+        <!-- FORM CUENTA -->
+        <div id="formCuenta" class="sub-formulario">
+            <div class="grupo-input"><label>Tipo</label><div class="wrapper-input-icono"><span class="material-icons">account_balance_wallet</span><select id="cuentaTipo"><option value="🏦 Bancos">🏦 Banco / Virtual</option><option value="💵 Efectivo">💵 Efectivo</option></select></div></div>
+            <div class="grupo-input"><label>Entidad</label><div class="wrapper-input-icono"><span class="material-icons">credit_card</span><input type="text" id="cuentaNombre" placeholder="Ej. Nequi..."></div></div>
+            <div class="grupo-input"><label>Saldo</label><div class="wrapper-input-icono"><span class="material-icons">account_balance</span><input type="number" id="cuentaMonto" placeholder="0"></div></div>
+            <button class="btn-guardar" id="btnGuardarCuenta">Sincronizar Fondos</button>
+        </div>
+    </div>
 
-function delGasto(i){db.gastos.splice(i,1);save();render();}
+    <!-- ================= CONEXIÓN DE INFRAESTRUCTURA FIREBASE SDK ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-function render(){
- let total=0;
- let cont=document.getElementById('categories');
- cont.innerHTML='';
+        const firebaseConfig = {
+            apiKey: "AIzaSyBO5r4-gWO_zhbve0b0BZzxS7SxCSBpB1o",
+            authDomain: "finanzaspro-712d7.firebaseapp.com",
+            projectId: "finanzaspro-712d7",
+            storageBucket: "finanzaspro-712d7.firebasestorage.app",
+            messagingSenderId: "40296640630",
+            appId: "1:40296640630:web:bebc00404679b7bdd0af57",
+            measurementId: "G-P7JYXWGRE7"
+        };
 
- db.cats.forEach((c,i)=>{
-  let sum=0;
-  c.subs.forEach(s=>sum+=s.value);
-  total+=sum;
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-  let div=document.createElement('div');div.className='card';
-  let h=document.createElement('h3');h.textContent=`${c.name} ($${sum})`;
-  h.onclick=()=>toggle(i);
+        let usuarioActual = null;
+        let modoAuthActual = 'login';
+        let datosApp = { cuentas: [], distribucion: [], gastos: [] };
+        let monedaBase = localStorage.getItem('monedaBaseFinanzas') || 'COP';
+        let filtroHistorialTipo = 'todos';
+        let textoResumenGlobal = "";
 
-  let b1=document.createElement('button');b1.textContent='+';b1.onclick=()=>addSub(i);
-  let b2=document.createElement('button');b2.textContent='🗑';b2.onclick=()=>delCat(i);
+        document.getElementById('selectMoneda').value = monedaBase;
+        document.getElementById('selectMoneda').addEventListener('change', (e) => {
+            monedaBase = e.target.value;
+            localStorage.setItem('monedaBaseFinanzas', monedaBase);
+            actualizarTodo();
+        });
 
-  let ul=document.createElement('ul');ul.className=c.open?'':'hidden';
+        // ESCUCHA ACTIVA DE SESIONES - AISLAMIENTO ANTICRUCES
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                usuarioActual = user;
+                document.getElementById('statusNube').innerHTML = '<span class="material-icons" style="font-size:14px; color:#10b981">cloud_done</span> Nube Conectada';
+                document.getElementById('seccionAuth').classList.remove('activa');
+                document.getElementById('interfazApp').classList.add('activa');
+                document.body.classList.remove('auth-activa');
+                
+                datosApp = { cuentas: [], distribucion: [], gastos: [] };
+                await descargarDatosDeNube();
+            } else {
+                usuarioActual = null;
+                datosApp = { cuentas: [], distribucion: [], gastos: [] };
+                textoResumenGlobal = "";
+                actualizarTodo();
 
-  c.subs.forEach((s,j)=>{
-    let li=document.createElement('li');li.textContent=`${s.name}: $${s.value}`;
-    let d=document.createElement('button');d.textContent='❌';d.onclick=()=>delSub(i,j);
-    li.appendChild(d);
-    ul.appendChild(li);
-  });
+                document.getElementById('interfazApp').classList.remove('activa');
+                document.getElementById('seccionAuth').classList.add('activa');
+                document.body.classList.add('auth-activa');
+            }
+        });
 
-  div.appendChild(h);div.appendChild(b1);div.appendChild(b2);div.appendChild(ul);
-  cont.appendChild(div);
- });
+        async function descargarDatosDeNube() {
+            if (!usuarioActual) return;
+            try {
+                const docRef = doc(db, "usuarios", usuarioActual.uid);
+                const docSnap = await getDoc(docRef);
 
- let gList=document.getElementById('gList');gList.innerHTML='';
- let tg=0;
- db.gastos.forEach((g,i)=>{
-  tg+=g.v;
-  let li=document.createElement('li');li.textContent=`${g.n}: $${g.v}`;
-  let d=document.createElement('button');d.textContent='❌';d.onclick=()=>delGasto(i);
-  li.appendChild(d);
-  gList.appendChild(li);
- });
+                if (docSnap.exists()) {
+                    const dataCloud = docSnap.data();
+                    datosApp = {
+                        cuentas: dataCloud.cuentas || [],
+                        distribucion: dataCloud.distribucion || [],
+                        gastos: dataCloud.gastos || []
+                    };
+                } else {
+                    datosApp = { cuentas: [], distribucion: [], gastos: [] };
+                    await setDoc(docRef, datosApp);
+                }
+                actualizarTodo();
+            } catch (error) {
+                console.error("Error al descargar:", error);
+            }
+        }
 
- document.getElementById('total').textContent=total-tg;
-}
+        async function sincronizarConNube() {
+            if (!usuarioActual) return;
+            document.getElementById('statusNube').innerHTML = '<span class="material-icons" style="font-size:14px; color:var(--amarillo-alerta)">cloud_queue</span> Sincronizando...';
+            try {
+                const docRef = doc(db, "usuarios", usuarioActual.uid);
+                await setDoc(docRef, datosApp);
+                document.getElementById('statusNube').innerHTML = '<span class="material-icons" style="font-size:14px; color:#10b981">cloud_done</span> Nube Sincronizada';
+            } catch (error) {
+                console.error("Error al subir datos:", error);
+                document.getElementById('statusNube').innerHTML = '<span class="material-icons" style="font-size:14px; color:var(--rojo-peligro)">cloud_off</span> Error Nube';
+            }
+        }
 
-render();
-</script>
+        document.getElementById('btnAccionAuth').addEventListener('click', async () => {
+            const email = document.getElementById('authEmail').value.trim();
+            const pass = document.getElementById('authPassword').value;
 
+            if (!email || !pass) return alert("Por favor ingresa los datos correspondientes.");
+
+            try {
+                if (modoAuthActual === 'login') {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, pass);
+                    alert("¡Te has registrado con éxito!");
+                }
+            } catch (err) {
+                alert("Verifica los datos: " + err.message);
+            }
+        });
+
+        const btnToggleAuth = document.getElementById('btnToggleAuth');
+        btnToggleAuth.addEventListener('click', () => {
+            if (modoAuthActual === 'login') {
+                modoAuthActual = 'registro';
+                document.getElementById('authTitulo').innerText = "Crear Cuenta";
+                document.getElementById('authSubtitulo').innerText = "Regístrate para asegurar tus finanzas en la nube";
+                document.getElementById('txtBtnAuth').innerText = "Registrarse Gratis";
+                btnToggleAuth.innerText = "Inicia sesión aquí";
+            } else {
+                modoAuthActual = 'login';
+                document.getElementById('authTitulo').innerText = "Iniciar Sesión";
+                document.getElementById('authSubtitulo').innerText = "Ingresa tus credenciales para acceder a la nube";
+                document.getElementById('txtBtnAuth').innerText = "Entrar al Sistema";
+                btnToggleAuth.innerText = "Regístrate aquí";
+            }
+        });
+
+        document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                datosApp = { cuentas: [], distribucion: [], gastos: [] };
+                actualizarTodo();
+            } catch (error) {
+                console.error("Error al desconectar sesión:", error);
+            }
+        });
+
+        function obtenerPeriodoActivo() { return document.getElementById('filtroPeriodo').value; }
+        document.getElementById('filtroPeriodo').addEventListener('change', () => actualizarTodo());
+
+        window.eliminarItem = async function(categoria, id) {
+            if(datosApp[categoria]) {
+                datosApp[categoria] = datosApp[categoria].filter(item => item.id !== id);
+                actualizarTodo();
+                await sincronizarConNube();
+            }
+        };
+
+        document.getElementById('btnGuardarGasto').addEventListener('click', async () => {
+            const nombre = document.getElementById('gastoNombre').value.trim();
+            const monto = parseFloat(document.getElementById('gastoMonto').value);
+            if (!nombre || isNaN(monto)) return alert('Campos incompletos');
+
+            datosApp.gastos.push({ id: Date.now(), nombre, monto, periodo: obtenerPeriodoActivo() });
+            document.getElementById('gastoNombre').value = ''; document.getElementById('gastoMonto').value = '';
+            cerrarModal(); actualizarTodo(); await sincronizarConNube();
+        });
+
+        document.getElementById('btnGuardarAhorro').addEventListener('click', async () => {
+            const nombre = document.getElementById('ahorroNombre').value.trim();
+            const tipo = document.getElementById('ahorroTipo').value;
+            const monto = parseFloat(document.getElementById('ahorroMonto').value);
+            if (!nombre || isNaN(monto)) return alert('Campos incompletos');
+
+            datosApp.distribucion.push({ id: Date.now(), nombre, tipo, monto, periodo: obtenerPeriodoActivo() });
+            document.getElementById('ahorroNombre').value = ''; document.getElementById('ahorroMonto').value = '';
+            cerrarModal(); actualizarTodo(); await sincronizarConNube();
+        });
+
+        document.getElementById('btnGuardarCuenta').addEventListener('click', async () => {
+            const tipo = document.getElementById('cuentaTipo').value;
+            const detalle = document.getElementById('cuentaNombre').value.trim();
+            const monto = parseFloat(document.getElementById('cuentaMonto').value);
+            if (!detalle || isNaN(monto)) return alert('Campos incompletos');
+
+            datosApp.cuentas.push({ id: Date.now(), tipo, detalle, monto, periodo: obtenerPeriodoActivo() });
+            document.getElementById('cuentaNombre').value = ''; document.getElementById('cuentaMonto').value = '';
+            cerrarModal(); actualizarTodo(); await sincronizarConNube();
+        });
+
+        function formatearMoneda(monto) {
+            let configuracion = { style: 'currency', currency: monedaBase };
+            let localizacion = 'es-CO';
+            if (monedaBase === 'USD') localizacion = 'en-US';
+            if (monedaBase === 'EUR') localizacion = 'de-DE';
+            if (monedaBase === 'MXN') localizacion = 'es-MX';
+            if ((monedaBase === 'COP' || monedaBase === 'MXN') && monto % 1 === 0) { configuracion.minimumFractionDigits = 0; configuracion.maximumFractionDigits = 0; }
+            return monto.toLocaleString(localizacion, configuracion);
+        }
+
+        function calcularPeriodoAnterior(periodoActual) { const mapasPeriodos = ["2026-05-Q1", "2026-05-Q2", "2026-06-Q1", "2026-06-Q2"]; const index = mapasPeriodos.indexOf(periodoActual); return index > 0 ? mapasPeriodos[index - 1] : null; }
+        function obtenerNetoDePeriodo(periodo) { if (!periodo) return 0; const totalCuentas = (datosApp.cuentas || []).filter(item => item.periodo === periodo).reduce((acc, curr) => acc + curr.monto, 0); const totalAhorros = (datosApp.distribucion || []).filter(item => item.periodo === periodo).reduce((acc, curr) => acc + curr.monto, 0); const totalGastos = (datosApp.gastos || []).filter(item => item.periodo === periodo).reduce((acc, curr) => acc + curr.monto, 0); return totalCuentas - (totalAhorros + totalGastos); }
+
+        function actualizarTodo() {
+            const periodoActual = obtenerPeriodoActivo();
+            const cFiltradas = (datosApp.cuentas || []).filter(c => c.periodo === periodoActual);
+            const dFiltradas = (datosApp.distribucion || []).filter(d => d.periodo === periodoActual);
+            const gFiltradas = (datosApp.gastos || []).filter(g => g.periodo === periodoActual);
+
+            const totalCuentas = cFiltradas.reduce((acc, curr) => acc + curr.monto, 0);
+            const totalAhorros = dFiltradas.reduce((acc, curr) => acc + curr.monto, 0);
+            const totalGastos = gFiltradas.reduce((acc, curr) => acc + curr.monto, 0);
+            const netoDisponible = totalCuentas - (totalAhorros + totalGastos);
+
+            document.getElementById('valCuentas').innerText = formatearMoneda(totalCuentas);
+            document.getElementById('valGastos').innerText = formatearMoneda(totalGastos);
+            document.getElementById('valAhorros').innerText = formatearMoneda(totalAhorros);
+
+            const txtNeto = document.getElementById('valNeto');
+            txtNeto.innerText = formatearMoneda(netoDisponible);
+            txtNeto.style.color = netoDisponible >= 0 ? '#ffffff' : 'var(--rojo-peligro)';
+
+            const periodoAnterior = calcularPeriodoAnterior(periodoActual);
+            const elBadge = document.getElementById('vsBadge'); const elIcono = document.getElementById('vsIcono'); const elTextoEstado = document.getElementById('vsTextoEstado'); const elDetalleTexto = document.getElementById('vsDetalleTexto'); const elTxtPeriodoPasado = document.getElementById('txtPeriodoPasado');
+            if (!periodoAnterior) { elTxtPeriodoPasado.innerText = "N/A"; elBadge.style.background = "#1e293b"; elBadge.style.color = "var(--texto-mutado)"; elIcono.innerText = "timeline"; elTextoEstado.innerText = "Base Inicial"; elDetalleTexto.innerText = "Falta periodo anterior."; }
+            else {
+                elTxtPeriodoPasado.innerText = periodoAnterior.replace("2026-", ""); const netoAnterior = obtenerNetoDePeriodo(periodoAnterior); const diferencia = netoDisponible - netoAnterior;
+                if (diferencia > 0) { elBadge.style.background = "rgba(16, 185, 129, 0.15)"; elBadge.style.color = "var(--verde-exito)"; elIcono.innerText = "trending_up"; elTextoEstado.innerText = "AL ALZA"; elDetalleTexto.innerHTML = `Rentabilidad <b style="color:var(--verde-exito)">+${formatearMoneda(diferencia)}</b>`; }
+                else if (diferencia < 0) { elBadge.style.background = "rgba(239, 68, 68, 0.15)"; elBadge.style.color = "var(--rojo-peligro)"; elIcono.innerText = "trending_down"; elTextoEstado.innerText = "A LA BAJA"; elDetalleTexto.innerHTML = `Capital libre <b style="color:var(--rojo-peligro)">${formatearMoneda(Math.abs(diferencia))}</b>`; }
+                else { elBadge.style.background = "rgba(245, 158, 11, 0.15)"; elBadge.style.color = "var(--amarillo-alerta)"; elIcono.innerText = "trending_flat"; elTextoEstado.innerText = "SIN CAMBIOS"; elDetalleTexto.innerText = "Mismo nivel."; }
+            }
+
+            textoResumenGlobal = `*📊 INFORME FINANZAS PRO*\n📅 Periodo: ${periodoActual}\n----------------------------\n*🏦 TOTAL CUENTAS:* ${formatearMoneda(totalCuentas)}\n*🔴 GASTOS:* ${formatearMoneda(totalGastos)}\n*🟢 AHORROS:* ${formatearMoneda(totalAhorros)}\n----------------------------\n*💵 NETO DISPONIBLE:* ${formatearMoneda(netoDisponible)}`;
+            document.getElementById('previewResumenTexto').innerText = textoResumenGlobal;
+
+            const dashCuentas = document.getElementById('dashCuentas'); dashCuentas.innerHTML = cFiltradas.length === 0 ? '<div class="sin-datos">No hay cuentas activas</div>' : '';
+            cFiltradas.forEach(c => { dashCuentas.innerHTML += `<div class="item-financiero cuenta"><div class="item-info-wrapper"><div class="icono-categoria"><span class="material-icons">account_balance</span></div><div class="item-info"><div class="nombre">${c.detalle}</div><div class="detalle">${c.tipo}</div></div></div><span class="item-monto">${formatearMoneda(c.monto)}</span></div>`; });
+            
+            const dashAhorros = document.getElementById('dashAhorros'); dashAhorros.innerHTML = dFiltradas.length === 0 ? '<div class="sin-datos">No hay ahorros distribuidos</div>' : '';
+            dFiltradas.forEach(d => { dashAhorros.innerHTML += `<div class="item-financiero ahorro"><div class="item-info-wrapper"><div class="icono-categoria"><span class="material-icons">savings</span></div><div class="item-info"><div class="nombre">${d.nombre}</div><div class="detalle">${d.tipo.toUpperCase()}</div></div></div><span class="item-monto">${formatearMoneda(d.monto)}</span></div>`; });
+            
+            renderizarHistorial();
+        }
+
+        function renderizarHistorial() {
+            const periodoActual = obtenerPeriodoActivo(); const contenedor = document.getElementById('listaHistorial'); contenedor.innerHTML = ''; let todosLosItems = [];
+            if (filtroHistorialTipo === 'todos' || filtroHistorialTipo === 'cuenta') { (datosApp.cuentas || []).filter(c => c.periodo === periodoActual).forEach(item => { todosLosItems.push({ ...item, xTipo: 'cuentas', xIcono: 'account_balance', xClase: 'cuenta', xDetalle: item.tipo }); }); }
+            if (filtroHistorialTipo === 'todos' || filtroHistorialTipo === 'ahorro') { (datosApp.distribucion || []).filter(d => d.periodo === periodoActual).forEach(item => { todosLosItems.push({ ...item, xTipo: 'distribucion', xIcono: 'savings', xClase: 'ahorro', xDetalle: item.tipo.toUpperCase(), nombre: item.nombre }); }); }
+            if (filtroHistorialTipo === 'todos' || filtroHistorialTipo === 'gasto') { (datosApp.gastos || []).filter(g => g.periodo === periodoActual).forEach(item => { todosLosItems.push({ ...item, xTipo: 'gastos', xIcono: 'trending_down', xClase: 'gasto', xDetalle: 'Gasto Fijo', nombre: item.nombre }); }); }
+            if (todosLosItems.length === 0) { contenedor.innerHTML = '<div class="sin-datos">Sin movimientos registrados.</div>'; return; }
+            todosLosItems.sort((a, b) => b.id - a.id).forEach(item => { contenedor.innerHTML += `<div class="item-financiero ${item.xClase}"><div class="item-info-wrapper"><div class="icono-categoria"><span class="material-icons">${item.xIcono}</span></div><div class="item-info"><div class="nombre">${item.nombre || item.detalle}</div><div class="detalle">${item.xDetalle}</div></div></div><div style="display:flex; align-items:center; gap:12px;"><span class="item-monto">${formatearMoneda(item.monto)}</span><span class="material-icons" style="color:var(--rojo-peligro); cursor:pointer; font-size:18px;" onclick="window.eliminarItem('${item.xTipo}', ${item.id})">delete</span></div></div>`; });
+        }
+
+        // CONTROL DE NAVEGACIÓN CORREGIDO (LÍNEA classList)
+        window.cambiarVista = function(vista) {
+            document.getElementById('vistaInicio').classList.remove('activa'); document.getElementById('vistaHistorial').classList.remove('activa'); document.getElementById('vistaResumen').classList.remove('activa'); document.getElementById('vistaAjustes').classList.remove('activa');
+            document.getElementById('navInicio').classList.remove('activo'); document.getElementById('navHistorial').classList.remove('activo'); document.getElementById('navResumen').classList.remove('activo'); document.getElementById('navAjustes').classList.remove('activo');
+            if (vista === 'inicio') { document.getElementById('vistaInicio').classList.add('activa'); document.getElementById('navInicio').classList.add('activo'); }
+            else if (vista === 'resumen') { document.getElementById('vistaResumen').classList.add('activa'); document.getElementById('navResumen').classList.add('activo'); }
+            else if (vista === 'ajustes') { document.getElementById('vistaAjustes').classList.add('activa'); document.getElementById('navAjustes').classList.add('activo'); }
+            else { document.getElementById('vistaHistorial').classList.add('activa'); document.getElementById('navHistorial').classList.add('activo'); }
+        };
+
+        document.querySelectorAll('.btn-filtro').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('activo'));
+                e.currentTarget.classList.add('activo');
+                filtroHistorialTipo = e.currentTarget.getAttribute('data-filtro');
+                renderizarHistorial();
+            });
+        });
+
+        window.abrirModal = function() { document.getElementById('capaOscura').style.display = 'block'; setTimeout(() => { document.getElementById('panelRegistro').classList.add('abierto'); }, 10); };
+        window.cerrarModal = function() { document.getElementById('panelRegistro').classList.remove('abierto'); setTimeout(() => { document.getElementById('capaOscura').style.display = 'none'; }, 300); };
+        
+        document.getElementById('navInicio').addEventListener('click', () => cambiarVista('inicio'));
+        document.getElementById('navResumen').addEventListener('click', () => cambiarVista('resumen'));
+        document.getElementById('navHistorial').addEventListener('click', () => cambiarVista('history'));
+        document.getElementById('navAjustes').addEventListener('click', () => cambiarVista('ajustes'));
+
+        document.getElementById('btnAbrirModal').addEventListener('click', abrirModal);
+        document.getElementById('btnCerrarModal').onclick = cerrarModal; 
+        document.getElementById('capaOscura').onclick = cerrarModal;
+
+        window.cambiarTabForm = function(tipo) {
+            document.getElementById('tabGasto').classList.remove('activo'); document.getElementById('tabAhorro').classList.remove('activo'); document.getElementById('tabCuenta').classList.remove('activo');
+            document.getElementById('formGasto').classList.remove('activo'); document.getElementById('formAhorro').classList.remove('activo'); document.getElementById('formCuenta').classList.remove('activo');
+            if (tipo === 'gasto') { document.getElementById('tabGasto').classList.add('activo'); document.getElementById('formGasto').classList.add('activo'); }
+            else if (tipo === 'ahorro') { document.getElementById('tabAhorro').classList.add('activo'); document.getElementById('formAhorro').classList.add('activo'); }
+            else { document.getElementById('tabCuenta').classList.add('activo'); document.getElementById('formCuenta').classList.add('activo'); }
+        };
+
+        document.querySelectorAll('.tab-form-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => cambiarTabForm(e.currentTarget.getAttribute('data-tab')));
+        });
+
+        document.getElementById('btnEnviarWA').addEventListener('click', () => {
+            if (!textoResumenGlobal) return alert("No hay datos cargados.");
+            window.open(`https://api.whatsapp.com/send?phone=573028571963&text=${encodeURIComponent(textoResumenGlobal)}`, '_blank');
+        });
+
+        // MOTOR DE PARTÍCULAS INTERACTIVAS
+        const canvas = document.getElementById('canvas-particulas'); const ctx = canvas.getContext('2d'); let particulas = [];
+        function ajustarCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', ajustarCanvas); ajustarCanvas();
+        class Particula {
+            constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 1.5 + 0.5; this.speedX = Math.random() * 0.2 - 0.1; this.speedY = Math.random() * 0.2 - 0.1; this.alpha = Math.random() * 0.4 + 0.1; }
+            update() { this.x += this.speedX; this.y += this.speedY; if (this.x > canvas.width || this.x < 0) this.speedX *= -1; if (this.y > canvas.height || this.y < 0) this.speedY *= -1; }
+            draw() { ctx.fillStyle = `rgba(99, 102, 241, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        for (let i = 0; i < 20; i++) particulas.push(new Particula());
+        function animar() { ctx.clearRect(0, 0, canvas.width, canvas.height); particulas.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animar); }
+        animar();
+    </script>
 </body>
 </html>
-
-<!-- manifest.json -->
-{
-  "name": "ContaApp",
-  "short_name": "ContaApp",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007aff",
-  "icons": []
-}
